@@ -276,3 +276,117 @@ unsigned int TextureFromFile(const char *path, const std::string &directory,
 
   return textureID;
 }
+
+const Mesh &Mesh::UnitCube() {
+  static Mesh cube;
+  // clang-format off
+  static float cube_vertices[] = {
+      // back face
+      -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,  // bottom-left
+       1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,  // top-right
+       1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f,  // bottom-right
+       1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,  // top-right
+      -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,  // bottom-left
+      -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f,  // top-left
+      // front face                
+      -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,  // bottom-left
+       1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f,  // bottom-right
+       1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,  // top-right
+       1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,  // top-right
+      -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  // top-left
+      -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,  // bottom-left
+      // left face                 
+      -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,  // top-right
+      -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f,  // top-left
+      -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  // bottom-left
+      -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  // bottom-left
+      -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f,  // bottom-right
+      -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f,  // top-right
+      // right face                       
+       1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f,  // top-left
+       1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  // bottom-right
+       1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f,  // top-right
+       1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f,  // bottom-right
+       1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f,  // top-left
+       1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f,  // bottom-left
+      // bottom face                      
+      -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f,  // top-right
+       1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f,  // top-left
+       1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  // bottom-left
+       1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  // bottom-left
+      -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f,  // bottom-right
+      -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f,  // top-right
+      // top face                         
+      -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,  // top-left
+       1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,  // bottom-right
+       1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f,  // top-right
+       1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f,  // bottom-right
+      -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,  // top-left
+      -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f   // bottom-left
+  };
+  // clang-format on
+  static bool first_run = true;
+  if (first_run) {
+    first_run = false;
+    cube.vertices.resize(36);
+    cube.indices.resize(36);
+    for (int i = 0; i < 36; ++i) {
+      auto &v = cube.vertices[i];
+      v.Position.x = cube_vertices[8 * i + 0];
+      v.Position.y = cube_vertices[8 * i + 1];
+      v.Position.z = cube_vertices[8 * i + 2];
+      v.Normal.x = cube_vertices[8 * i + 3];
+      v.Normal.y = cube_vertices[8 * i + 4];
+      v.Normal.z = cube_vertices[8 * i + 5];
+      v.TexCoords.x = cube_vertices[8 * i + 6];
+      v.TexCoords.y = cube_vertices[8 * i + 7];
+
+      cube.indices[i] = i;
+    }
+  }
+  return cube;
+}
+
+const Mesh &Mesh::UnitQuad() {
+  static Mesh quad;
+  // clang-format off
+  static float quad_vertices[] = {
+       // positions         // normals          // texcoords
+      -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,  // bottom-left
+       1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f,  // bottom-right
+       1.0f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,  // top-right
+       1.0f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f,  // top-right
+      -1.0f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f,  // top-left
+      -1.0f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,  // bottom-left
+  };
+  // clang-format on
+  static bool first_run = true;
+  if (first_run) {
+    first_run = false;
+    quad.vertices.resize(6);
+    quad.indices.resize(6);
+    for (int i = 0; i < 6; ++i) {
+      auto &v = quad.vertices[i];
+      v.Position.x = quad_vertices[8 * i + 0];
+      v.Position.y = quad_vertices[8 * i + 1];
+      v.Position.z = quad_vertices[8 * i + 2];
+      v.Normal.x = quad_vertices[8 * i + 3];
+      v.Normal.y = quad_vertices[8 * i + 4];
+      v.Normal.z = quad_vertices[8 * i + 5];
+      v.TexCoords.x = quad_vertices[8 * i + 6];
+      v.TexCoords.y = quad_vertices[8 * i + 7];
+
+      quad.indices[i] = i;
+    }
+  }
+  return quad;
+}
+
+Mesh Mesh::Quad(float r) {
+  Mesh quad = Mesh::UnitQuad();
+  for (auto &v : quad.vertices) {
+    v.Position *= r;
+    v.TexCoords *= r;
+  }
+  return quad;
+}

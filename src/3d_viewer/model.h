@@ -52,6 +52,14 @@ class Mesh {
   // Load vertices data into buffers
   void LoadIntoBuffers();
 
+  // Create standard shapes
+  //- standard cube [(-1, -1, -1), (1, 1, 1)]
+  static const Mesh &UnitCube();
+  //- standard quad [(-1, -1, 0), (1, 1, 0)]
+  static const Mesh &UnitQuad();
+  // - quad [(-r, -r, 0), (r, r, 0)] with tex coords [(0, 0),(r, r)]
+  static Mesh Quad(float r);
+
  private:
   unsigned int VAO;
   unsigned int VBO, EBO;
