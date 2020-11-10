@@ -94,7 +94,7 @@ void DirectionalLightingShadowScheme::Render() {
   shader.setMat4("view", view);
   shader.setMat4("model", glm::mat4(1.0f));
   // set light uniforms
-  shader.setVec3("viewPos", m_camera->Position);
+  shader.setVec3("viewPos", m_camera->Position());
   shader.setVec3("lightPos", m_lightPos);
   shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
   glActiveTexture(GL_TEXTURE0 + m_colorTexUnitNum);
@@ -155,11 +155,9 @@ void RenderingScheme::SetModel(const Model* model) {
 void RenderingScheme::init(const Model* model, Camera* camera) {
   SetModel(model);
   SetCamera(camera);
-  m_camera->Position = m_bboxCenter;
-  m_camera->Position.z +=
-      bbox[1] - bbox[0] + bbox[3] - bbox[2] + bbox[5] - bbox[4];
-  m_camera->Front = {0, 0, -1};
-  m_camera->Up = {0, 1, 0};
+  glm::vec3 p = m_bboxCenter;
+  p.z += bbox[1] - bbox[0] + bbox[3] - bbox[2] + bbox[5] - bbox[4];
+  m_camera->Reset(glm::lookAt(p, m_bboxCenter, glm::vec3(0.f, 1.f, 0.f)));
 }
 
 SimpleRenderingScheme::SimpleRenderingScheme()

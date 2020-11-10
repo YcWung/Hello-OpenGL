@@ -10,7 +10,6 @@
 
 #include "camera.h"
 #include "config.h"
-#include "glm/ext/matrix_transform.hpp"
 #include "model.h"
 #include "rendering_scheme.h"
 #include "shader.h"
@@ -26,7 +25,7 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void process_keyboard_input(GLFWwindow *window);
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool first_mouse = true;
@@ -85,6 +84,7 @@ int main(int argc, char **argv) {
   if (!window) return -1;
 
   /* set up data and rendering scheme */
+  camera.translate(glm::vec3(0.0f, 0.0f, 3.0f));
   // Model model(model_file_path);
   Model model = CreateTestModel();
   DirectionalLightingShadowScheme rendering_scheme;
