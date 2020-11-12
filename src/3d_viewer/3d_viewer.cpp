@@ -85,8 +85,8 @@ int main(int argc, char **argv) {
 
   /* set up data and rendering scheme */
   navigation.camera().translate(glm::vec3(0.0f, 0.0f, 3.0f));
-  // Model model(model_file_path);
-  Model model = CreateTestModel();
+  Model model(model_file_path);
+  // Model model = CreateTestModel();
   // DirectionalLightingShadowScheme rendering_scheme;
   // rendering_scheme.SetModel(&model);
   // rendering_scheme.SetNavigation(&navigation);
@@ -112,6 +112,7 @@ int main(int argc, char **argv) {
   }
 
   // end
+  model.ReleaseBuffers();
   glfwTerminate();
   return 0;
 }

@@ -81,7 +81,7 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath,
   if (geometryPath != nullptr) glDeleteShader(geometry);
 }
 
-void Shader::rm() { glDeleteProgram(ID); }
+void Shader::Release() { glDeleteProgram(ID); }
 
 void Shader::use() const { glUseProgram(ID); }
 // --------------------------------------------------------------

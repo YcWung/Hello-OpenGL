@@ -12,7 +12,7 @@ class Shader {
          const char *geometryPath = nullptr);
 
   void use() const;
-  void rm();
+  void Release();
 
   void setBool(const std::string &name, bool value) const;
   void setInt(const std::string &name, int value) const;

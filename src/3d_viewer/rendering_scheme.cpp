@@ -49,6 +49,10 @@ DirectionalLightingShadowScheme::DirectionalLightingShadowScheme(
 DirectionalLightingShadowScheme::~DirectionalLightingShadowScheme() {
   glDeleteFramebuffers(1, &depthMapFBO);
   glDeleteTextures(1, &depthMap);
+  m_trackball.ReleaseBuffers();
+  simpleDepthShader.Release();
+  shader.Release();
+  uniColorShader.Release();
 }
 
 void DirectionalLightingShadowScheme::Render() {

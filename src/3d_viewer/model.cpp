@@ -84,15 +84,12 @@ void Mesh::LoadIntoBuffers() {
                         (void *)offsetof(Vertex, Bitangent));
 
   glBindVertexArray(0);
-  loaded_into_buffers = true;
 }
 
-Mesh::~Mesh() {
-  if (loaded_into_buffers) {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-  }
+void Mesh::ReleaseBuffers() {
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+  glDeleteBuffers(1, &EBO);
 }
 
 void Transform(std::vector<Mesh::Vertex> &vertices, const glm::mat4 &T) {
@@ -286,6 +283,8 @@ unsigned int TextureFromFile(const char *path, const std::string &directory,
   return textureID;
 }
 
+void Texture::Release() { glDeleteTextures(1, &id); }
+
 const Mesh &Mesh::UnitCube() {
   static Mesh cube;
   // clang-format off
@@ -436,7 +435,7 @@ TrackballModel::TrackballModel() : m_circle_discretization(32) {
   glBindVertexArray(0);
 }
 
-TrackballModel::~TrackballModel() {
+void TrackballModel::ReleaseBuffers() {
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);

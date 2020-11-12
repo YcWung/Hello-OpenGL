@@ -16,6 +16,8 @@ struct Texture {
   unsigned int id;
   std::string type;
   std::string path;
+
+  void Release();
 };
 unsigned int TextureFromFile(const char *path, const std::string &directory,
                              bool gamma = false);
@@ -40,13 +42,9 @@ class Mesh {
   std::vector<Texture> textures;
 
   // constructor
-  Mesh() : loaded_into_buffers(false) {}
-  Mesh(const Mesh &m)
-      : loaded_into_buffers(false),
-        vertices(m.vertices),
-        indices(m.indices),
-        textures(m.textures) {}
-  ~Mesh();
+  Mesh() {}
+  // ~Mesh();
+  void ReleaseBuffers();
 
   // one-pass render
   void Draw(Shader &shader) const;
@@ -62,7 +60,6 @@ class Mesh {
   static Mesh Quad(float r);
 
  private:
-  bool loaded_into_buffers;
   unsigned int VAO;
   unsigned int VBO, EBO;
 };
@@ -83,6 +80,11 @@ class Model {
   // draws the model, and thus all its meshes
   void Draw(Shader &shader) const {
     for (unsigned int i = 0; i < meshes.size(); i++) meshes[i].Draw(shader);
+  }
+
+  void ReleaseBuffers() {
+    for (Mesh &mesh : meshes) mesh.ReleaseBuffers();
+    for (Texture &tex : textures_loaded) tex.Release();
   }
 
  private:
@@ -108,7 +110,7 @@ class Model {
 class TrackballModel {
  public:
   TrackballModel();
-  ~TrackballModel();
+  void ReleaseBuffers();
   void Draw(Shader &shader, const glm::mat4 &model) const;
 
  private:
