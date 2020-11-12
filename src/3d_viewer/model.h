@@ -40,12 +40,13 @@ class Mesh {
   std::vector<Texture> textures;
 
   // constructor
-  Mesh() {}
-  Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices,
-       std::vector<Texture> textures)
-      : vertices(vertices), indices(indices), textures(textures) {
-    LoadIntoBuffers();
-  }
+  Mesh() : loaded_into_buffers(false) {}
+  Mesh(const Mesh &m)
+      : loaded_into_buffers(false),
+        vertices(m.vertices),
+        indices(m.indices),
+        textures(m.textures) {}
+  ~Mesh();
 
   // one-pass render
   void Draw(Shader &shader) const;
@@ -61,6 +62,7 @@ class Mesh {
   static Mesh Quad(float r);
 
  private:
+  bool loaded_into_buffers;
   unsigned int VAO;
   unsigned int VBO, EBO;
 };
@@ -101,6 +103,18 @@ class Model {
    */
   std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type,
                                             std::string typeName);
+};
+
+class TrackballModel {
+ public:
+  TrackballModel();
+  ~TrackballModel();
+  void Draw(Shader &shader, const glm::mat4 &model) const;
+
+ private:
+  unsigned int VAO;
+  unsigned int VBO, EBO;
+  unsigned int m_circle_discretization;
 };
 
 #endif  // _3D_VIEWER_MODEL_H

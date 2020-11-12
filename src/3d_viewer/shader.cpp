@@ -81,6 +81,8 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath,
   if (geometryPath != nullptr) glDeleteShader(geometry);
 }
 
+void Shader::rm() { glDeleteProgram(ID); }
+
 void Shader::use() const { glUseProgram(ID); }
 // --------------------------------------------------------------
 void Shader::setBool(const std::string &name, bool value) const {

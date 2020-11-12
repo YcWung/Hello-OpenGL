@@ -84,6 +84,15 @@ void Mesh::LoadIntoBuffers() {
                         (void *)offsetof(Vertex, Bitangent));
 
   glBindVertexArray(0);
+  loaded_into_buffers = true;
+}
+
+Mesh::~Mesh() {
+  if (loaded_into_buffers) {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+  }
 }
 
 void Transform(std::vector<Mesh::Vertex> &vertices, const glm::mat4 &T) {
@@ -343,6 +352,7 @@ const Mesh &Mesh::UnitCube() {
 
       cube.indices[i] = i;
     }
+    cube.LoadIntoBuffers();
   }
   return cube;
 }
@@ -378,6 +388,7 @@ const Mesh &Mesh::UnitQuad() {
 
       quad.indices[i] = i;
     }
+    quad.LoadIntoBuffers();
   }
   return quad;
 }
@@ -389,4 +400,70 @@ Mesh Mesh::Quad(float r) {
     v.TexCoords *= r;
   }
   return quad;
+}
+
+TrackballModel::TrackballModel() : m_circle_discretization(32) {
+  std::vector<glm::vec3> vertices(m_circle_discretization, glm::vec3(0.0f));
+  std::vector<unsigned int> indices(m_circle_discretization + 1);
+  float theta = 2 * M_PI / m_circle_discretization;
+  for (int i = 0; i < m_circle_discretization; ++i) {
+    glm::vec3 &v = vertices[i];
+    float angle = i * theta;
+    v.x = std::cos(angle);
+    v.y = std::sin(angle);
+  }
+  for (unsigned int i = 0; i < m_circle_discretization; ++i) indices[i] = i;
+  indices[m_circle_discretization] = 0;
+  glGenVertexArrays(1, &VAO);
+  glGenBuffers(1, &VBO);
+  glGenBuffers(1, &EBO);
+
+  glBindVertexArray(VAO);
+  // load data into vertex buffers
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, m_circle_discretization * sizeof(glm::vec3),
+               vertices.data(), GL_STATIC_DRAW);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+               (m_circle_discretization + 1) * sizeof(unsigned int),
+               indices.data(), GL_STATIC_DRAW);
+  // set the vertex attribute pointers
+  //- vertex Positions
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *)0);
+
+  // reset
+  glBindVertexArray(0);
+}
+
+TrackballModel::~TrackballModel() {
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+  glDeleteBuffers(1, &EBO);
+}
+
+void TrackballModel::Draw(Shader &shader, const glm::mat4 &model) const {
+  glBindVertexArray(VAO);
+  glm::mat4 M;
+  unsigned int N = m_circle_discretization + 1;
+
+  // xy plane
+  shader.setVec4("Color", glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+  M = model;
+  shader.setMat4("model", M);
+  glDrawElements(GL_LINE_STRIP, N, GL_UNSIGNED_INT, 0);
+
+  // yz plane
+  shader.setVec4("Color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+  M = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  shader.setMat4("model", M);
+  glDrawElements(GL_LINE_STRIP, N, GL_UNSIGNED_INT, 0);
+
+  // zx plane
+  shader.setVec4("Color", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+  M = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+  shader.setMat4("model", M);
+  glDrawElements(GL_LINE_STRIP, N, GL_UNSIGNED_INT, 0);
+
+  glBindVertexArray(0);
 }

@@ -8,9 +8,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-#include "camera.h"
 #include "config.h"
 #include "model.h"
+#include "navigate.h"
 #include "rendering_scheme.h"
 #include "shader.h"
 
@@ -25,7 +25,7 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void process_keyboard_input(GLFWwindow *window);
 
 // camera
-Camera camera;
+Navigation navigation;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool first_mouse = true;
@@ -84,15 +84,16 @@ int main(int argc, char **argv) {
   if (!window) return -1;
 
   /* set up data and rendering scheme */
-  camera.translate(glm::vec3(0.0f, 0.0f, 3.0f));
+  navigation.camera().translate(glm::vec3(0.0f, 0.0f, 3.0f));
   // Model model(model_file_path);
   Model model = CreateTestModel();
-  DirectionalLightingShadowScheme rendering_scheme;
-  rendering_scheme.SetModel(&model);
-  rendering_scheme.SetCamera(&camera);
-  rendering_scheme.SetLight(glm::vec3(-2.0f, 4.0f, -1.0f),
-                            -glm::vec3(-2.0f, 4.0f, -1.0f), 1.0, 7.5, 10.0);
-  // SimpleRenderingScheme rendering_scheme(&model, &camera);
+  // DirectionalLightingShadowScheme rendering_scheme;
+  // rendering_scheme.SetModel(&model);
+  // rendering_scheme.SetNavigation(&navigation);
+  // rendering_scheme.SetLight(glm::vec3(-2.0f, 4.0f, -1.0f),
+  //                           -glm::vec3(-2.0f, 4.0f, -1.0f), 1.0, 7.5, 10.0);
+  // SimpleRenderingScheme rendering_scheme(&model, &navigation);
+  DirectionalLightingShadowScheme rendering_scheme(&model, &navigation);
 
   // event loop
   while (!glfwWindowShouldClose(window)) {
@@ -169,13 +170,13 @@ void process_keyboard_input(GLFWwindow *window) {
     glfwSetWindowShouldClose(window, true);
 
   else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    camera.ProcessKeyboard(FORWARD, delta_time);
+    navigation.ProcessKeyboard(Navigation::FORWARD, delta_time);
   else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    camera.ProcessKeyboard(BACKWARD, delta_time);
+    navigation.ProcessKeyboard(Navigation::BACKWARD, delta_time);
   else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    camera.ProcessKeyboard(LEFT, delta_time);
+    navigation.ProcessKeyboard(Navigation::LEFT, delta_time);
   else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    camera.ProcessKeyboard(RIGHT, delta_time);
+    navigation.ProcessKeyboard(Navigation::RIGHT, delta_time);
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
@@ -192,9 +193,9 @@ void cursor_pos_callback(GLFWwindow *window, double xpos, double ypos) {
   float yoffset = lastY - ypos;
   lastX = xpos;
   lastY = ypos;
-  camera.ProcessMouseMovement(xoffset, yoffset);
+  navigation.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-  camera.ProcessMouseScroll(yoffset);
+  navigation.ProcessMouseScroll(yoffset);
 }
