@@ -7,7 +7,7 @@
 #include "config.h"
 #include "glm/geometric.hpp"
 
-inline const std::string& res_dir() { return Config::Instance().exe_dir; }
+inline const std::string& res_dir() { return Config::Instance().shader_dir; }
 
 DirectionalLightingShadowScheme::DirectionalLightingShadowScheme()
     : shader((res_dir() + "/shadow_rendering.vs").c_str(),
@@ -43,7 +43,27 @@ DirectionalLightingShadowScheme::DirectionalLightingShadowScheme()
 DirectionalLightingShadowScheme::DirectionalLightingShadowScheme(
     const Model* model, Navigation* nav)
     : DirectionalLightingShadowScheme() {
-  init(model, nav);
+  SetModel(model);
+  SetNavigation(nav);
+  InitNavigationFromBBox();
+  // Put a light
+  glm::vec3 p1(bbox[0], bbox[2], bbox[4]);
+  glm::vec3 p2(bbox[1], bbox[3], bbox[5]);
+  glm::vec3 d1 = 0.5f * (p2 - p1);
+  glm::vec3 d2 = glm::vec3(d1.x + d1.y + d1.z) - d1;
+  m_lightPos = p2 + 0.5f * d2;
+  m_lightNearPlane = norm(m_lightPos - p2);
+  m_lightFarPlane = norm(m_lightPos - p1);
+  m_lightRadius = 0.51 * norm(p2 - p1);
+  m_lightDirection = glm::normalize(m_bboxCenter - m_lightPos);
+
+  std::cout << "p1: " << p1 << std::endl;
+  std::cout << "p2: " << p2 << std::endl;
+  std::cout << "light pos: " << m_lightPos << std::endl;
+  std::cout << "light far plane: " << m_lightFarPlane << std::endl;
+  std::cout << "light near plane: " << m_lightNearPlane << std::endl;
+  std::cout << "light direction: " << m_lightDirection << std::endl;
+  std::cout << "light radius: " << m_lightRadius << std::endl;
 }
 
 DirectionalLightingShadowScheme::~DirectionalLightingShadowScheme() {
@@ -172,26 +192,11 @@ void RenderingScheme::SetModel(const Model* model) {
   for (int i = 0; i < 6; ++i) std::cout << "  " << bbox[i];
   std::cout << std::endl;
 
-  // Put a light
   glm::vec3 p1(bbox[0], bbox[2], bbox[4]);
   glm::vec3 p2(bbox[1], bbox[3], bbox[5]);
-  glm::vec3 d1 = 0.5f * (p2 - p1);
-  glm::vec3 d2 = glm::vec3(d1.x + d1.y + d1.z) - d1;
-  m_lightPos = p2 + 0.5f * d2;
-  m_lightNearPlane = norm(m_lightPos - p2);
-  m_lightFarPlane = norm(m_lightPos - p1);
-  m_lightRadius = 0.51 * norm(p2 - p1);
   m_bboxCenter = 0.5f * p2 + 0.5f * p1;
-  m_lightDirection = glm::normalize(m_bboxCenter - m_lightPos);
 
-  std::cout << "p1: " << p1 << std::endl;
-  std::cout << "p2: " << p2 << std::endl;
-  std::cout << "light pos: " << m_lightPos << std::endl;
   std::cout << "BBox center: " << m_bboxCenter << std::endl;
-  std::cout << "light far plane: " << m_lightFarPlane << std::endl;
-  std::cout << "light near plane: " << m_lightNearPlane << std::endl;
-  std::cout << "light direction: " << m_lightDirection << std::endl;
-  std::cout << "light radius: " << m_lightRadius << std::endl;
 
   // compute number of texture units used by model.Draw
   unsigned int tex_num = 1;
@@ -203,11 +208,9 @@ void RenderingScheme::SetModel(const Model* model) {
             << std::endl;
 }
 
-void RenderingScheme::init(const Model* model, Navigation* nav) {
-  SetModel(model);
-  SetNavigation(nav);
+void RenderingScheme::InitNavigationFromBBox() {
   glm::vec3 p = m_bboxCenter;
-  p.z += bbox[5] - bbox[4];
+  p.z += 1.5f * (bbox[5] - bbox[4]);
   m_navigation->camera().Reset(
       glm::lookAt(p, m_bboxCenter, glm::vec3(0.0f, 1.0f, 0.0f)));
   m_navigation->SetTrackballCenter(m_bboxCenter);
@@ -229,7 +232,9 @@ SimpleRenderingScheme::SimpleRenderingScheme()
 SimpleRenderingScheme::SimpleRenderingScheme(const Model* model,
                                              Navigation* nav)
     : SimpleRenderingScheme() {
-  init(model, nav);
+  SetModel(model);
+  SetNavigation(nav);
+  InitNavigationFromBBox();
 }
 
 void SimpleRenderingScheme::Render() {

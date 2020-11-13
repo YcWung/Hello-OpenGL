@@ -52,6 +52,7 @@ foreach(OTHER_EXE ${OTHER_EXES})
     "src/${OTHER_EXE}/*.vs"
     "src/${OTHER_EXE}/*.fs"
     "src/${OTHER_EXE}/*.gs"
+    "src/${OTHER_EXE}/shaders/*"
     )
   add_executable(${OTHER_EXE} ${SOURCES})
   target_link_libraries(${OTHER_EXE} PRIVATE GLAD glfw stb_image)
@@ -67,9 +68,7 @@ foreach(OTHER_EXE ${OTHER_EXES})
     RUNTIME_OUTPUT_DIRECTORY_RELEASE Release/${OTHER_EXE}
     CXX_STANDARD 17
     )
-  # get_target_property(OTHER_EXE_OUTPUT_DIR ${OTHER_EXE} RUNTIME_OUTPUT_DIRECTORY)
-  # message(STATUS "${OTHER_EXE} OUTPUT IN: ${OTHER_EXE_OUTPUT_DIR}")
-  # copy shader files into the build tree
+  # link shader files
   file(GLOB SHADERS
     "src/${OTHER_EXE}/*.vs"
     "src/${OTHER_EXE}/*.fs"
@@ -77,23 +76,20 @@ foreach(OTHER_EXE ${OTHER_EXES})
     )
   foreach(SHADER ${SHADERS})
     get_filename_component(SHADER_NAME ${SHADER} NAME)
-    # cmake_print_variables(SHADER SHADER_NAME)
-    # add_custom_command(TARGET ${OTHER_EXE} POST_BUILD COMMAND
-    #   ${CMAKE_COMMAND} -E copy_if_different ${SHADER} $<TARGET_FILE_DIR:${OTHER_EXE}>
-    #   )
     add_custom_command(TARGET ${OTHER_EXE} POST_BUILD COMMAND
       ${CMAKE_COMMAND} -E create_symlink ${SHADER} $<TARGET_FILE_DIR:${OTHER_EXE}>/${SHADER_NAME}
       )
   endforeach(SHADER)
-  # copy resources in to build tree
-  # file(GLOB RESOURCES "src/${OTHER_EXE}/resources/*")
-  # add_custom_command(TARGET ${OTHER_EXE} POST_BUILD
-  #   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${OTHER_EXE}>/resources
-  #   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RESOURCES} $<TARGET_FILE_DIR:${OTHER_EXE}>/resources
-  #   )
-  add_custom_command(TARGET ${OTHER_EXE} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/src/${OTHER_EXE}/resources $<TARGET_FILE_DIR:${OTHER_EXE}>/resources
-    )
+  # link shaders directory
+  if(EXISTS ${CMAKE_SOURCE_DIR}/src/${OTHER_EXE}/shaders)
+    add_custom_command(TARGET ${OTHER_EXE} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/src/${OTHER_EXE}/shaders $<TARGET_FILE_DIR:${OTHER_EXE}>/shaders
+      )
+  endif()
+  # link resources directory
+  if(EXISTS ${CMAKE_SOURCE_DIR}/src/${OTHER_EXE}/resources)
+    add_custom_command(TARGET ${OTHER_EXE} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_SOURCE_DIR}/src/${OTHER_EXE}/resources $<TARGET_FILE_DIR:${OTHER_EXE}>/resources
+      )
+  endif()
 endforeach(OTHER_EXE)
-    
-cmake_print_variables(CMAKE_RUNTIME_OUTPUT_DIRECTORY)

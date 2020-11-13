@@ -74,8 +74,10 @@ int main(int argc, char **argv) {
   // resource path
   auto exe_dir = std::filesystem::absolute(argv[0]).parent_path();
   auto resource_path = exe_dir / "resources";
+  auto shader_path = exe_dir / "shaders";
   config.exe_dir = exe_dir.string();
   config.resource_dir = resource_path.string();
+  config.shader_dir = shader_path.string();
   std::string model_file_path =
       (resource_path / "backpack" / "backpack.obj").string();
 

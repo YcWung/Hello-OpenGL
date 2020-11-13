@@ -7,6 +7,7 @@ class Config final {
  public:
   std::string exe_dir;
   std::string resource_dir;
+  std::string shader_dir;
 
   static Config& Instance() {
     static Config config;

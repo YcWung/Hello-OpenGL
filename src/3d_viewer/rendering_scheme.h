@@ -8,27 +8,16 @@
 class RenderingScheme {
  public:
   virtual void Render() = 0;
-  void init(const Model*, Navigation*);
   void SetModel(const Model*);
   void SetNavigation(Navigation* nav) { m_navigation = nav; }
-  void SetLight(const glm::vec3& p, const glm::vec3& dir, float near, float far,
-                float r) {
-    m_lightPos = p;
-    m_lightDirection = dir;
-    m_lightNearPlane = near;
-    m_lightFarPlane = far;
-    m_lightRadius = r;
-  }
+  void InitNavigationFromBBox();
 
  protected:
   const Model* m_model;
   Navigation* m_navigation;
 
   float bbox[6];  // { xmin, xmax, ymin, ymax, zmin, zmax }
-  glm::vec3 m_lightPos;
-  glm::vec3 m_lightDirection;
   glm::vec3 m_bboxCenter;
-  float m_lightNearPlane, m_lightFarPlane, m_lightRadius;
   unsigned int m_colorTexUnitNum;
 };
 
@@ -37,6 +26,14 @@ class DirectionalLightingShadowScheme : public RenderingScheme {
   DirectionalLightingShadowScheme();
   DirectionalLightingShadowScheme(const Model*, Navigation*);
   ~DirectionalLightingShadowScheme();
+  void SetLight(const glm::vec3& p, const glm::vec3& dir, float near, float far,
+                float r) {
+    m_lightPos = p;
+    m_lightDirection = dir;
+    m_lightNearPlane = near;
+    m_lightFarPlane = far;
+    m_lightRadius = r;
+  }
   virtual void Render() override;
 
  private:
@@ -46,6 +43,9 @@ class DirectionalLightingShadowScheme : public RenderingScheme {
   unsigned int depthMapFBO;
   unsigned int depthMap;
   const unsigned int SHADOW_WIDTH, SHADOW_HEIGHT;
+  glm::vec3 m_lightPos;
+  glm::vec3 m_lightDirection;
+  float m_lightNearPlane, m_lightFarPlane, m_lightRadius;
   TrackballModel m_trackball;
 };
 
