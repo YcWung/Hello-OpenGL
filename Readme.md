@@ -9,10 +9,9 @@ Todo:
 
 1. Use mouse drag to rotate camera.
 2. Point picker.
-3. Render wireframe and point cloud.
-4. HDR.
-5. Multiple light sources.
-6. Light source moving with camera.
-7. Bloom.
-8. Defered rendering.
-9. PBR.
+3. HDR.
+4. Multiple light sources.
+5. Light source moving with camera.
+6. Bloom.
+7. Defered rendering.
+8. PBR.

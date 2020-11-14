@@ -8,12 +8,12 @@
 class RenderingScheme {
  public:
   virtual void Render() = 0;
-  void SetModel(const Model*);
+  void SetModel(const SceneModel*);
   void SetNavigation(Navigation* nav) { m_navigation = nav; }
   void InitNavigationFromBBox();
 
  protected:
-  const Model* m_model;
+  const SceneModel* m_model;
   Navigation* m_navigation;
 
   float bbox[6];  // { xmin, xmax, ymin, ymax, zmin, zmax }
@@ -24,7 +24,7 @@ class RenderingScheme {
 class DirectionalLightingShadowScheme : public RenderingScheme {
  public:
   DirectionalLightingShadowScheme();
-  DirectionalLightingShadowScheme(const Model*, Navigation*);
+  DirectionalLightingShadowScheme(const SceneModel*, Navigation*);
   ~DirectionalLightingShadowScheme();
   void SetLight(const glm::vec3& p, const glm::vec3& dir, float near, float far,
                 float r) {
@@ -52,7 +52,7 @@ class DirectionalLightingShadowScheme : public RenderingScheme {
 class SimpleRenderingScheme : public RenderingScheme {
  public:
   SimpleRenderingScheme();
-  SimpleRenderingScheme(const Model*, Navigation*);
+  SimpleRenderingScheme(const SceneModel*, Navigation*);
   virtual void Render() override;
 
  private:

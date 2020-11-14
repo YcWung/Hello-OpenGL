@@ -22,27 +22,22 @@ struct Texture {
 unsigned int TextureFromFile(const char *path, const std::string &directory,
                              bool gamma = false);
 
-class Mesh {
+class ObjectModel {
  public:
-  struct Vertex {
-    // position
-    glm::vec3 Position;
-    // normal
-    glm::vec3 Normal;
-    // texCoords
-    glm::vec2 TexCoords;
-    // tangent
-    glm::vec3 Tangent;
-    // bitangent
-    glm::vec3 Bitangent;
-  };
+  enum PrimitiveType { POINTS, LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP };
 
-  std::vector<Vertex> vertices;
+  std::vector<glm::vec3> positions;
+  std::vector<glm::vec3> normals;
+  std::vector<glm::vec2> tex_coords;
+  std::vector<glm::vec3> tangents;
+  std::vector<glm::vec3> bitangents;
+  std::vector<glm::vec4> colors;
   std::vector<unsigned int> indices;
   std::vector<Texture> textures;
+  PrimitiveType primitive_type;
 
   // constructor
-  Mesh() {}
+  ObjectModel() {}
   // ~Mesh();
   void ReleaseBuffers();
 
@@ -53,27 +48,29 @@ class Mesh {
 
   // Create standard shapes
   //- standard cube [(-1, -1, -1), (1, 1, 1)]
-  static const Mesh &UnitCube();
+  static const ObjectModel &UnitCube();
   //- standard quad [(-1, -1, 0), (1, 1, 0)]
-  static const Mesh &UnitQuad();
+  static const ObjectModel &UnitQuad();
   // - quad [(-r, -r, 0), (r, r, 0)] with tex coords [(0, 0),(r, r)]
-  static Mesh Quad(float r);
+  static ObjectModel Quad(float r);
 
  private:
   unsigned int VAO;
   unsigned int VBO, EBO;
 };
 
-void Transform(std::vector<Mesh::Vertex> &vertices, const glm::mat4 &T);
+void Transform(std::vector<glm::vec3> &positions,
+               std::vector<glm::vec3> &normals, const glm::mat4 &T);
 
-class Model {
+class SceneModel {
  public:
   std::vector<Texture> textures_loaded;
-  std::vector<Mesh> meshes;
+  std::vector<ObjectModel> meshes;
 
-  Model() : gammaCorrection(false) {}
+  SceneModel() : gammaCorrection(false) {}
   // constructor, expects a filepath to a 3D model.
-  Model(std::string const &path, bool gamma = false) : gammaCorrection(gamma) {
+  SceneModel(std::string const &path, bool gamma = false)
+      : gammaCorrection(gamma) {
     loadModel(path);
   }
 
@@ -83,7 +80,7 @@ class Model {
   }
 
   void ReleaseBuffers() {
-    for (Mesh &mesh : meshes) mesh.ReleaseBuffers();
+    for (ObjectModel &mesh : meshes) mesh.ReleaseBuffers();
     for (Texture &tex : textures_loaded) tex.Release();
   }
 
@@ -99,7 +96,7 @@ class Model {
    * any).
    */
   void processNode(aiNode *node, const aiScene *scene);
-  Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+  ObjectModel processMesh(aiMesh *mesh, const aiScene *scene);
   /** checks all material textures of a given type and loads the textures if
    * they're not loaded yet. the required info is returned as a Texture struct.
    */
@@ -117,6 +114,7 @@ class TrackballModel {
   unsigned int VAO;
   unsigned int VBO, EBO;
   unsigned int m_circle_discretization;
+  ObjectModel m_circle;
 };
 
 #endif  // _3D_VIEWER_MODEL_H

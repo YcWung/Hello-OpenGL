@@ -67,7 +67,7 @@ GLFWwindow *InitWindowOpenGL() {
   return window;
 }
 
-Model CreateTestModel();
+SceneModel CreateTestModel();
 
 int main(int argc, char **argv) {
   Config &config = Config::Instance();
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
 
   /* set up data and rendering scheme */
   navigation.camera().translate(glm::vec3(0.0f, 0.0f, 3.0f));
-  Model model(model_file_path);
+  SceneModel model(model_file_path);
   // Model model = CreateTestModel();
   // DirectionalLightingShadowScheme rendering_scheme;
   // rendering_scheme.SetModel(&model);
@@ -119,18 +119,18 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-Model CreateTestModel() {
+SceneModel CreateTestModel() {
   // load the wood texture
   Texture wood_tex;
   wood_tex.id = TextureFromFile("wood.png", Config::Instance().resource_dir);
   wood_tex.type = "texture_diffuse";
 
   // create a mesh of standard cube
-  Mesh cube = Mesh::UnitCube();
+  ObjectModel cube = ObjectModel::UnitCube();
   cube.textures.push_back(wood_tex);
 
   // Create model
-  Model model;
+  SceneModel model;
   model.meshes.resize(4);
   model.textures_loaded.push_back(wood_tex);
   //- add cube 0
@@ -139,29 +139,29 @@ Model CreateTestModel() {
   M = glm::mat4(1.0f);
   M = glm::translate(M, glm::vec3(0.0f, 1.5f, 0.0));
   M = glm::scale(M, glm::vec3(0.5f));
-  Transform(model.meshes[0].vertices, M);
+  Transform(model.meshes[0].positions, model.meshes[0].normals, M);
   model.meshes[0].LoadIntoBuffers();
   //- add cube 1
   model.meshes[1] = cube;
   M = glm::mat4(1.0f);
   M = glm::translate(M, glm::vec3(2.0f, 0.0f, 1.0));
   M = glm::scale(M, glm::vec3(0.5f));
-  Transform(model.meshes[1].vertices, M);
+  Transform(model.meshes[1].positions, model.meshes[1].normals, M);
   model.meshes[1].LoadIntoBuffers();
   //- add cube 2
   model.meshes[2] = cube;
   M = glm::mat4(1.0f);
   M = glm::translate(M, glm::vec3(-1.0f, 0.0f, 2.0));
   M = glm::scale(M, glm::vec3(0.5f));
-  Transform(model.meshes[2].vertices, M);
+  Transform(model.meshes[2].positions, model.meshes[2].normals, M);
   model.meshes[2].LoadIntoBuffers();
   //- add a plane
-  Mesh &plane = model.meshes[3];
-  plane = Mesh::Quad(25.0f);
+  ObjectModel &plane = model.meshes[3];
+  plane = ObjectModel::Quad(25.0f);
   M = glm::mat4(1.0f);
   M = glm::translate(M, glm::vec3(0.0f, -0.5f, 0.0f));
   M = glm::rotate(M, glm::radians(-90.0f), glm::vec3(1, 0, 0));
-  Transform(plane.vertices, M);
+  Transform(plane.positions, plane.normals, M);
   plane.textures.push_back(wood_tex);
   plane.LoadIntoBuffers();
 

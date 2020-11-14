@@ -41,7 +41,7 @@ DirectionalLightingShadowScheme::DirectionalLightingShadowScheme()
 }
 
 DirectionalLightingShadowScheme::DirectionalLightingShadowScheme(
-    const Model* model, Navigation* nav)
+    const SceneModel* model, Navigation* nav)
     : DirectionalLightingShadowScheme() {
   SetModel(model);
   SetNavigation(nav);
@@ -157,22 +157,21 @@ void DirectionalLightingShadowScheme::Render() {
   M = glm::scale(M, glm::vec3(s));
   uniColorShader.setMat4("model", M);
   uniColorShader.setVec4("Color", 1.0f, 1.0f, 0.0f, 1.0f);
-  Mesh::UnitCube().Draw(uniColorShader);
+  ObjectModel::UnitCube().Draw(uniColorShader);
 }
 
-void RenderingScheme::SetModel(const Model* model) {
+void RenderingScheme::SetModel(const SceneModel* model) {
   m_model = model;
   // compute bounding box
-  const glm::vec3& p0 = m_model->meshes[0].vertices[0].Position;
+  const glm::vec3& p0 = m_model->meshes[0].positions[0];
   bbox[0] = p0.x;
   bbox[1] = p0.x;
   bbox[2] = p0.y;
   bbox[3] = p0.y;
   bbox[4] = p0.z;
   bbox[5] = p0.z;
-  for (const Mesh& mesh : m_model->meshes) {
-    for (const auto& vertex : mesh.vertices) {
-      const glm::vec3& p = vertex.Position;
+  for (const ObjectModel& mesh : m_model->meshes) {
+    for (const glm::vec3& p : mesh.positions) {
       if (p.x < bbox[0])
         bbox[0] = p.x;
       else if (p.x > bbox[1])
@@ -200,7 +199,7 @@ void RenderingScheme::SetModel(const Model* model) {
 
   // compute number of texture units used by model.Draw
   unsigned int tex_num = 1;
-  for (const Mesh& mesh : m_model->meshes)
+  for (const ObjectModel& mesh : m_model->meshes)
     if (tex_num < mesh.textures.size()) tex_num = mesh.textures.size();
   m_colorTexUnitNum = tex_num;
 
@@ -229,7 +228,7 @@ SimpleRenderingScheme::SimpleRenderingScheme()
     : shader((res_dir() + "/simple_rendering.vs").c_str(),
              (res_dir() + "/simple_rendering.fs").c_str()) {}
 
-SimpleRenderingScheme::SimpleRenderingScheme(const Model* model,
+SimpleRenderingScheme::SimpleRenderingScheme(const SceneModel* model,
                                              Navigation* nav)
     : SimpleRenderingScheme() {
   SetModel(model);
