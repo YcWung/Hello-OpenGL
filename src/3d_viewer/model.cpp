@@ -486,11 +486,7 @@ TrackballModel::TrackballModel() : m_circle_discretization(32) {
   m_circle.LoadIntoBuffers();
 }
 
-void TrackballModel::ReleaseBuffers() {
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  glDeleteBuffers(1, &EBO);
-}
+void TrackballModel::ReleaseBuffers() { m_circle.ReleaseBuffers(); }
 
 void TrackballModel::Draw(Shader &shader, const glm::mat4 &model) const {
   glm::mat4 M;

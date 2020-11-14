@@ -111,8 +111,6 @@ class TrackballModel {
   void Draw(Shader &shader, const glm::mat4 &model) const;
 
  private:
-  unsigned int VAO;
-  unsigned int VBO, EBO;
   unsigned int m_circle_discretization;
   ObjectModel m_circle;
 };
